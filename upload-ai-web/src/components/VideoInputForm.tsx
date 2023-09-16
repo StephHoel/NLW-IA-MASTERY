@@ -3,6 +3,7 @@ import { getFFmpeg } from '@/lib/ffmpeg'
 import { fetchFile } from '@ffmpeg/util'
 import { FileVideo, Upload } from 'lucide-react'
 import { ChangeEvent, FormEvent, useMemo, useRef, useState } from 'react'
+
 import { Button } from './ui/Button'
 import { Label } from './ui/Label'
 import { Separator } from './ui/Separator'
@@ -26,6 +27,8 @@ export default function VideoInputForm(props: VideoProps) {
   const promptInputRef = useRef<HTMLTextAreaElement>(null)
   const [status, setStatus] = useState<Status>('waiting')
 
+  const [progress, setProgress] = useState(0)
+
   function handleFileSelected(event: ChangeEvent<HTMLInputElement>) {
     const { files } = event.currentTarget
 
@@ -46,8 +49,8 @@ export default function VideoInputForm(props: VideoProps) {
     // ffmpeg.on('log', (log) => console.log(log))
 
     ffmpeg.on('progress', (progress) => {
-      // fazer animação com esse progresso
-      console.log('Convert progress:', Math.round(progress.progress * 100))
+      // console.log('Convert progress:', Math.round(progress.progress * 100))
+      setProgress(Math.round(progress.progress * 100))
     })
 
     await ffmpeg.exec([
@@ -159,16 +162,26 @@ export default function VideoInputForm(props: VideoProps) {
         data-success={status === 'success'}
         disabled={status !== 'waiting'}
         type="submit"
-        className="w-full data-[success=true]:bg-emerald-400"
+        className="relative w-full h-10 rounded-lg data-[success=true]:bg-emerald-400"
       >
-        {status === 'waiting' ? (
-          <>
-            Carregar vídeo
-            <Upload className="w-4 h-4 ml-2" />
-          </>
-        ) : (
-          statusMessages[status]
-        )}
+        <div
+          className="absolute top-0 left-0 h-full rounded-lg bg-violet-400"
+          style={{ width: `${progress}%` }}
+        ></div>
+        <span
+          className={`relative z-10 flex items-center justify-center w-full h-full ${
+            progress >= 99 ? 'text-white' : ''
+          }`}
+        >
+          {status === 'waiting' ? (
+            <>
+              Carregar vídeo
+              <Upload className="w-4 h-4 ml-2" />
+            </>
+          ) : (
+            statusMessages[status]
+          )}
+        </span>
       </Button>
     </form>
   )
