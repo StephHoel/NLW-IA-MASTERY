@@ -56,6 +56,35 @@ Transcrição:
 '''`.trim(),
     },
   })
+
+  await prisma.prompt.create({
+    data: {
+      title: 'Tradução da Transcrição para Inglês',
+      template: `Seu papel é traduzir uma transcrição para inglês.
+
+        Abaixo você receberá uma transcrição desse vídeo, use essa transcrição para fazer a tradução.
+        
+        Transcrição:
+        '''
+        {transcription}
+        '''`.trim(),
+    },
+  })
+
+  await prisma.prompt.create({
+    data: {
+      title: 'Tradução da Transcrição para Português',
+      template:
+        `Seu papel é traduzir uma transcrição de inglês para português brasileiro (PT-BR).
+
+        Abaixo você receberá uma transcrição desse vídeo, use essa transcrição para fazer a tradução.
+        
+        Transcrição:
+        '''
+        {transcription}
+        '''`.trim(),
+    },
+  })
 }
 
 main()
